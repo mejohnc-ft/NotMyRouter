@@ -1,0 +1,15 @@
+# Logs and data
+logs/
+*.log
+*.pid
+
+# macOS
+.DS_Store
+*.app/
+
+# Node
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
