@@ -247,13 +247,33 @@ async function apiWrite(session, path, data) {
 // CLI
 // ============================================================
 
-const password = process.argv[2] || process.env.ROUTER_PASSWORD;
+// Password resolution: CLI arg > env var > stdin (for subprocess piping)
+let password = process.argv[2] || process.env.ROUTER_PASSWORD;
+let cmd;
+
+if (password && ['read','apply','get','set','status'].includes(password)) {
+  // First arg is actually a command, not a password — need stdin or env
+  cmd = password;
+  password = process.env.ROUTER_PASSWORD;
+} else {
+  cmd = process.argv[3] || 'read';
+}
+
+if (!password) {
+  // Try reading from stdin (non-interactive, for piped input)
+  if (!process.stdin.isTTY) {
+    const chunks = [];
+    for await (const chunk of process.stdin) chunks.push(chunk);
+    password = Buffer.concat(chunks).toString().trim();
+  }
+}
+
 if (!password) {
   console.error('Usage: node router_login.mjs <password> [command]');
   console.error('   or: ROUTER_PASSWORD=xxx node router_login.mjs [command]');
+  console.error('   or: echo "$password" | node router_login.mjs [command]');
   process.exit(1);
 }
-const cmd = process.argv[3] || 'read';
 
 if (cmd !== 'status') {
   console.log(`Cox Killer - TP-Link BE10000 Router Control`);

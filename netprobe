@@ -1,4 +1,4 @@
-#!/opt/homebrew/bin/bash
+#!/usr/bin/env bash
 #
 # netprobe - Continuous network monitor to prove router vs ISP issues
 # Usage:

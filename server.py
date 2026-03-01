@@ -18,9 +18,6 @@ from pathlib import Path
 from collections import defaultdict
 import subprocess
 import platform
-import base64
-import hashlib
-
 PORT = 8457
 LOG_DIR = Path.home() / "network-monitor" / "logs"
 PID_FILE = LOG_DIR / ".webdashboard.pid"
@@ -29,14 +26,11 @@ IS_MACOS = platform.system() == "Darwin"
 
 
 # === Cross-platform password storage ===
-# macOS: uses Keychain via `security` CLI
-# Other: uses an obfuscated local file (not high-security, but keeps
-# the password out of plaintext config files)
-
-def _file_key():
-    """Derive a machine-specific key for file-based storage."""
-    seed = f"CoxKiller-{Path.home()}-{platform.node()}"
-    return hashlib.sha256(seed.encode()).digest()
+# macOS: uses Keychain via `security` CLI (encrypted by the OS)
+# Other: plaintext file with 0600 permissions. This is the same approach
+# used by ~/.netrc, ~/.pgpass, and similar tools. The file is gitignored.
+# If you need stronger protection, use an environment variable instead:
+#   export ROUTER_PASSWORD=yourpassword
 
 def store_password(password):
     """Store router password. Returns (success, error_msg)."""
@@ -54,18 +48,21 @@ def store_password(password):
             return False, str(e)
     else:
         try:
-            key = _file_key()
-            # XOR-based obfuscation (not encryption, but avoids plaintext)
-            pw_bytes = password.encode()
-            obscured = bytes(b ^ key[i % len(key)] for i, b in enumerate(pw_bytes))
-            CRED_FILE.write_text(base64.b64encode(obscured).decode())
-            CRED_FILE.chmod(0o600)
+            CRED_FILE.write_text(password)
+            try:
+                CRED_FILE.chmod(0o600)
+            except OSError:
+                pass  # Windows doesn't support Unix permissions
             return True, None
         except Exception as e:
             return False, str(e)
 
 def retrieve_password():
-    """Retrieve stored router password. Returns password string or None."""
+    """Retrieve stored router password. Returns password string or None.
+    Checks environment variable first, then platform credential store."""
+    env_pw = os.environ.get("ROUTER_PASSWORD")
+    if env_pw:
+        return env_pw
     if IS_MACOS:
         try:
             result = subprocess.run(
@@ -82,10 +79,7 @@ def retrieve_password():
         try:
             if not CRED_FILE.exists():
                 return None
-            key = _file_key()
-            obscured = base64.b64decode(CRED_FILE.read_text())
-            pw_bytes = bytes(b ^ key[i % len(key)] for i, b in enumerate(obscured))
-            return pw_bytes.decode()
+            return CRED_FILE.read_text().strip()
         except Exception:
             return None
 
@@ -726,8 +720,8 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
                 return
             script = Path.home() / "network-monitor" / "router_login.mjs"
             result = subprocess.run(
-                ["node", str(script), password, "status"],
-                capture_output=True, text=True, timeout=30
+                ["node", str(script), "status"],
+                input=password, capture_output=True, text=True, timeout=30
             )
             if result.returncode != 0:
                 self.send_json({"error": result.stderr.strip() or "Command failed"})
