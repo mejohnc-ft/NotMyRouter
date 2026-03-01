@@ -8,6 +8,14 @@ Named for Cox, but works against any ISP.
 
 ![Dashboard](https://img.shields.io/badge/status-active-brightgreen) ![macOS](https://img.shields.io/badge/macOS-supported-blue) ![Linux](https://img.shields.io/badge/Linux-supported-blue) ![Windows](https://img.shields.io/badge/Windows-supported-blue)
 
+![Cox Killer Dashboard — 24h view showing router latency spikes](screenshot-24h.jpg)
+
+<details>
+<summary>Healthy network view (1h window)</summary>
+
+![Cox Killer Dashboard — healthy network](screenshot-1h.jpg)
+</details>
+
 ## Features
 
 **Works with any ISP:**
