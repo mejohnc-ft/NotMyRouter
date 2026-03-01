@@ -818,7 +818,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cox Killer</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7"></script>
 <style>
   :root {
     --bg: #0a0a0f; --surface: #12131a; --surface2: #1a1b24;
