@@ -17,10 +17,92 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from collections import defaultdict
 import subprocess
+import platform
+import base64
+import hashlib
 
 PORT = 8457
 LOG_DIR = Path.home() / "network-monitor" / "logs"
 PID_FILE = LOG_DIR / ".webdashboard.pid"
+CRED_FILE = Path.home() / "network-monitor" / ".credentials"
+IS_MACOS = platform.system() == "Darwin"
+
+
+# === Cross-platform password storage ===
+# macOS: uses Keychain via `security` CLI
+# Other: uses an obfuscated local file (not high-security, but keeps
+# the password out of plaintext config files)
+
+def _file_key():
+    """Derive a machine-specific key for file-based storage."""
+    seed = f"CoxKiller-{Path.home()}-{platform.node()}"
+    return hashlib.sha256(seed.encode()).digest()
+
+def store_password(password):
+    """Store router password. Returns (success, error_msg)."""
+    if IS_MACOS:
+        try:
+            subprocess.run(
+                ["security", "add-generic-password", "-a", "CoxKiller",
+                 "-s", "router-password", "-w", password, "-U"],
+                capture_output=True, text=True, timeout=5, check=True
+            )
+            return True, None
+        except subprocess.CalledProcessError as e:
+            return False, e.stderr.strip() or "Keychain error"
+        except Exception as e:
+            return False, str(e)
+    else:
+        try:
+            key = _file_key()
+            # XOR-based obfuscation (not encryption, but avoids plaintext)
+            pw_bytes = password.encode()
+            obscured = bytes(b ^ key[i % len(key)] for i, b in enumerate(pw_bytes))
+            CRED_FILE.write_text(base64.b64encode(obscured).decode())
+            CRED_FILE.chmod(0o600)
+            return True, None
+        except Exception as e:
+            return False, str(e)
+
+def retrieve_password():
+    """Retrieve stored router password. Returns password string or None."""
+    if IS_MACOS:
+        try:
+            result = subprocess.run(
+                ["security", "find-generic-password", "-a", "CoxKiller",
+                 "-s", "router-password", "-w"],
+                capture_output=True, text=True, timeout=5
+            )
+            if result.returncode == 0:
+                return result.stdout.strip()
+        except Exception:
+            pass
+        return None
+    else:
+        try:
+            if not CRED_FILE.exists():
+                return None
+            key = _file_key()
+            obscured = base64.b64decode(CRED_FILE.read_text())
+            pw_bytes = bytes(b ^ key[i % len(key)] for i, b in enumerate(obscured))
+            return pw_bytes.decode()
+        except Exception:
+            return None
+
+def password_is_stored():
+    """Check if a password is stored."""
+    if IS_MACOS:
+        try:
+            result = subprocess.run(
+                ["security", "find-generic-password", "-a", "CoxKiller",
+                 "-s", "router-password", "-w"],
+                capture_output=True, text=True, timeout=5
+            )
+            return result.returncode == 0
+        except Exception:
+            return False
+    else:
+        return CRED_FILE.exists()
 
 
 def get_all_logs():
@@ -634,25 +716,14 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(DASHBOARD_HTML.encode())
 
     def handle_password_check(self):
-        try:
-            result = subprocess.run(
-                ["security", "find-generic-password", "-a", "CoxKiller", "-s", "router-password", "-w"],
-                capture_output=True, text=True, timeout=5
-            )
-            self.send_json({"stored": result.returncode == 0})
-        except Exception:
-            self.send_json({"stored": False})
+        self.send_json({"stored": password_is_stored()})
 
     def handle_router_status(self):
         try:
-            pw_result = subprocess.run(
-                ["security", "find-generic-password", "-a", "CoxKiller", "-s", "router-password", "-w"],
-                capture_output=True, text=True, timeout=5
-            )
-            if pw_result.returncode != 0:
+            password = retrieve_password()
+            if not password:
                 self.send_json({"error": "No password stored"})
                 return
-            password = pw_result.stdout.strip()
             script = Path.home() / "network-monitor" / "router_login.mjs"
             result = subprocess.run(
                 ["node", str(script), password, "status"],
@@ -737,16 +808,11 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
             if not password:
                 self.send_json({"success": False, "error": "No password provided"})
                 return
-            try:
-                subprocess.run(
-                    ["security", "add-generic-password", "-a", "CoxKiller", "-s", "router-password", "-w", password, "-U"],
-                    capture_output=True, text=True, timeout=5, check=True
-                )
+            success, error = store_password(password)
+            if success:
                 self.send_json({"success": True})
-            except subprocess.CalledProcessError as e:
-                self.send_json({"success": False, "error": e.stderr.strip() or "Keychain error"})
-            except Exception as e:
-                self.send_json({"success": False, "error": str(e)})
+            else:
+                self.send_json({"success": False, "error": error})
         else:
             self.send_response(404)
             self.end_headers()
