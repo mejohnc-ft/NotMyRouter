@@ -1,5 +1,5 @@
 {
-  "name": "coxkiller",
+  "name": "notmyrouter",
   "version": "1.0.0",
   "description": "Network evidence dashboard that proves whether your ISP or router is the problem",
   "type": "module",
@@ -10,7 +10,7 @@
     "status": "node router_login.mjs status",
     "report": "./netprobe --report"
   },
-  "keywords": ["network", "monitoring", "isp", "cox", "packet-loss", "latency", "dashboard"],
+  "keywords": ["network", "monitoring", "isp", "packet-loss", "latency", "dashboard"],
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"

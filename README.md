@@ -1,19 +1,19 @@
-# Cox Killer
+# NotMyRouter
 
 **Network evidence dashboard that continuously monitors your connection and proves whether your ISP or your router is the problem.**
 
-Cox Killer runs a ping-based probe against your router gateway and two public DNS servers (Cloudflare 1.1.1.1, Google 8.8.8.8). If the gateway is clean but external targets show loss, the problem is your ISP. If the gateway itself drops packets, it's your local network. The dashboard visualizes this in real time and generates an escalation toolkit with call scripts, counter-arguments, and evidence you can present to support.
+NotMyRouter runs a ping-based probe against your router gateway and two public DNS servers (Cloudflare 1.1.1.1, Google 8.8.8.8). If the gateway is clean but external targets show loss, the problem is your ISP. If the gateway itself drops packets, it's your local network. The dashboard visualizes this in real time and generates an escalation toolkit with call scripts, counter-arguments, and evidence you can present to support.
 
-Named for Cox, but works against any ISP.
+Works against any ISP — built with Cox, expanding to more.
 
 ![Dashboard](https://img.shields.io/badge/status-active-brightgreen) ![macOS](https://img.shields.io/badge/macOS-supported-blue) ![Linux](https://img.shields.io/badge/Linux-supported-blue) ![Windows](https://img.shields.io/badge/Windows-supported-blue)
 
-![Cox Killer Dashboard — 24h view showing router latency spikes](screenshot-24h.jpg)
+![NotMyRouter Dashboard — 24h view showing router latency spikes](screenshot-24h.jpg)
 
 <details>
 <summary>Healthy network view (1h window)</summary>
 
-![Cox Killer Dashboard — healthy network](screenshot-1h.jpg)
+![NotMyRouter Dashboard — healthy network](screenshot-1h.jpg)
 </details>
 
 ## Features
@@ -56,8 +56,8 @@ Optional:
 ### macOS / Linux
 
 ```bash
-git clone https://github.com/mejohnc-ft/CoxKiller.git
-cd CoxKiller
+git clone https://github.com/mejohnc-ft/NotMyRouter.git
+cd NotMyRouter
 
 # Start monitoring + web dashboard
 python3 netprobe.py --web
@@ -66,8 +66,8 @@ python3 netprobe.py --web
 ### Windows
 
 ```powershell
-git clone https://github.com/mejohnc-ft/CoxKiller.git
-cd CoxKiller
+git clone https://github.com/mejohnc-ft/NotMyRouter.git
+cd NotMyRouter
 
 # Start monitoring + web dashboard
 python netprobe.py --web
@@ -135,20 +135,20 @@ netprobe.py (python)        server.py (python)         browser
 - **`server.py`** — Python HTTP server on port 8457, single-page dashboard with analysis engine
 - **`router_login.mjs`** — Node.js client for TP-Link encrypted router API (optional)
 - **`router_ctl.py`** — alternative Python implementation of the router API (optional)
-- **`CoxKiller.swift`** — native macOS app wrapper (optional)
+- **`NotMyRouter.swift`** — native macOS app wrapper (optional)
 
 ## Project Structure
 
 ```
-CoxKiller/
+NotMyRouter/
   netprobe.py         # Cross-platform probe daemon (python)
   netprobe            # Interactive terminal probe (bash, macOS/Linux)
   server.py           # Web dashboard + API server (python)
   router_login.mjs    # TP-Link router API client (node, optional)
   router_ctl.py       # Router API client alt (python, optional)
-  CoxKiller.swift     # Native macOS app wrapper (optional)
+  NotMyRouter.swift   # Native macOS app wrapper (optional)
   make_icon.py        # App icon generator
-  cox_killer_icon.png # Favicon / app icon
+  notmyrouter_icon.png # Favicon / app icon
   package.json        # npm scripts for convenience
   logs/               # CSV data, reports, PID files (gitignored)
 ```

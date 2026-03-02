@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for Cox Killer server pure functions."""
+"""Tests for NotMyRouter server pure functions."""
 import unittest
 import sys
 from pathlib import Path

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cox Killer - Cross-platform network probe daemon
+NotMyRouter - Cross-platform network probe daemon
 Pings gateway + Cloudflare + Google DNS, logs to CSV.
 Works on macOS, Linux, and Windows.
 
@@ -126,7 +126,7 @@ def run_foreground(targets):
         f.write("timestamp,target,target_name,latency_ms,packet_loss\n")
 
     PID_FILE.write_text(str(os.getpid()))
-    print(f"Cox Killer probe running (PID {os.getpid()})")
+    print(f"NotMyRouter probe running (PID {os.getpid()})")
     print(f"Targets: {', '.join(f'{name} ({ip})' for ip, name in targets)}")
     print(f"Log: {logfile}")
     print("Press Ctrl+C to stop\n")
@@ -238,7 +238,7 @@ def run_web(targets):
 
     # Start web server
     server_script = Path(__file__).parent / "server.py"
-    print("Starting Cox Killer dashboard on http://localhost:8457 ...")
+    print("Starting NotMyRouter dashboard on http://localhost:8457 ...")
 
     if SYSTEM == "Windows":
         proc = subprocess.Popen(

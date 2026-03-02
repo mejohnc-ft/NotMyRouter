@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate Cox Killer app icon."""
+"""Generate NotMyRouter app icon."""
 from PIL import Image, ImageDraw, ImageFont
 import subprocess, os, shutil
 
@@ -89,7 +89,7 @@ def create_icon(size=SIZE):
     # Main text - bright orange gradient effect (solid orange)
     draw.text((tx, ty), text, fill=(255, 140, 50), font=font_large)
 
-    # Subtitle "COX KILLER" at bottom
+    # Subtitle "NOTMYROUTER" at bottom
     try:
         for font_name in [
             '/System/Library/Fonts/SFCompact-Bold.otf',
@@ -104,7 +104,7 @@ def create_icon(size=SIZE):
     except:
         font_small = ImageFont.load_default()
 
-    sub = "COX KILLER"
+    sub = "NOTMYROUTER"
     bbox2 = draw.textbbox((0, 0), sub, font=font_small)
     sw = bbox2[2] - bbox2[0]
     sx = (size - sw) // 2
@@ -133,7 +133,7 @@ def create_icon(size=SIZE):
 
 
 def main():
-    iconset_dir = '/tmp/CoxKiller.iconset'
+    iconset_dir = '/tmp/NotMyRouter.iconset'
     if os.path.exists(iconset_dir):
         shutil.rmtree(iconset_dir)
     os.makedirs(iconset_dir)
@@ -149,14 +149,14 @@ def main():
 
     # Create .icns
     icns_path = os.path.expanduser(
-        '~/Applications/Cox Killer.app/Contents/Resources/AppIcon.icns'
+        '~/Applications/NotMyRouter.app/Contents/Resources/AppIcon.icns'
     )
     subprocess.run(['iconutil', '-c', 'icns', iconset_dir, '-o', icns_path], check=True)
     print(f'Created {icns_path}')
 
     # Also save a PNG for the web dashboard favicon
     favicon = base.resize((256, 256), Image.LANCZOS)
-    favicon_path = os.path.expanduser('~/network-monitor/cox_killer_icon.png')
+    favicon_path = os.path.expanduser('~/network-monitor/notmyrouter_icon.png')
     favicon.save(favicon_path)
     print(f'Created {favicon_path}')
 

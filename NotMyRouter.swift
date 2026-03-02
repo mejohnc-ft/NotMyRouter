@@ -2,7 +2,7 @@ import Cocoa
 import WebKit
 
 // ============================================================
-// Cox Killer - Native macOS App
+// NotMyRouter - Native macOS App
 // Launches daemon + server, then shows dashboard in WKWebView
 // ============================================================
 
@@ -89,7 +89,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         config.preferences.setValue(true, forKey: "developerExtrasEnabled")
 
         webView = WKWebView(frame: .zero, configuration: config)
-        webView.customUserAgent = "CoxKiller/1.0"
+        webView.customUserAgent = "NotMyRouter/1.0"
 
         // Create window
         let screenFrame = NSScreen.main?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1400, height: 900)
@@ -104,7 +104,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             backing: .buffered,
             defer: false
         )
-        window.title = "Cox Killer"
+        window.title = "NotMyRouter"
         window.titlebarAppearsTransparent = true
         window.collectionBehavior.insert(.fullScreenPrimary)
 

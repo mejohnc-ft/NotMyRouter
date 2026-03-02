@@ -30,7 +30,7 @@ NC='\033[0m'
 mkdir -p "$LOGDIR"
 
 usage() {
-    echo "Cox Killer - Network monitor to prove router vs ISP issues"
+    echo "NotMyRouter - Network monitor to prove router vs ISP issues"
     echo ""
     echo "Usage:"
     echo "  netprobe                    Interactive dashboard (5 min)"
@@ -87,7 +87,7 @@ run_dashboard() {
         recent_history[$t]=""
     done
 
-    echo -e "${BOLD}Cox Killer${NC} - monitoring for ${DURATION} min | logging to ${DIM}${logfile}${NC}"
+    echo -e "${BOLD}NotMyRouter${NC} - monitoring for ${DURATION} min | logging to ${DIM}${logfile}${NC}"
     echo -e "Gateway: ${CYAN}${GATEWAY}${NC} | Targets: ${TARGETS[*]}"
     echo -e "Press Ctrl+C to stop early\n"
 
@@ -437,7 +437,7 @@ run_web() {
         echo "Starting probe daemon first..."
         run_daemon
     fi
-    echo "Starting Cox Killer dashboard on http://localhost:8457 ..."
+    echo "Starting NotMyRouter dashboard on http://localhost:8457 ..."
     python3 "$HOME/network-monitor/server.py" &
     local web_pid=$!
     echo "$web_pid" > "$web_pid_file"

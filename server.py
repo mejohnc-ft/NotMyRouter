@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cox Killer - Network evidence dashboard
+NotMyRouter - Network evidence dashboard
 Continuously monitors and proves whether Cox or your router is the problem.
 Run: python3 ~/network-monitor/server.py
 Then open: http://localhost:8457
@@ -37,7 +37,7 @@ def store_password(password):
     if IS_MACOS:
         try:
             subprocess.run(
-                ["security", "add-generic-password", "-a", "CoxKiller",
+                ["security", "add-generic-password", "-a", "NotMyRouter",
                  "-s", "router-password", "-w", password, "-U"],
                 capture_output=True, text=True, timeout=5, check=True
             )
@@ -66,7 +66,7 @@ def retrieve_password():
     if IS_MACOS:
         try:
             result = subprocess.run(
-                ["security", "find-generic-password", "-a", "CoxKiller",
+                ["security", "find-generic-password", "-a", "NotMyRouter",
                  "-s", "router-password", "-w"],
                 capture_output=True, text=True, timeout=5
             )
@@ -88,7 +88,7 @@ def password_is_stored():
     if IS_MACOS:
         try:
             result = subprocess.run(
-                ["security", "find-generic-password", "-a", "CoxKiller",
+                ["security", "find-generic-password", "-a", "NotMyRouter",
                  "-s", "router-password", "-w"],
                 capture_output=True, text=True, timeout=5
             )
@@ -481,7 +481,7 @@ def build_remediation(targets_data):
     }
 
     rtr["test_procedure"] = (
-        "Change ONE setting at a time, then monitor with Cox Killer for 30 minutes. "
+        "Change ONE setting at a time, then monitor with NotMyRouter for 30 minutes. "
         "Compare your P95 and jitter before/after. The first change that drops your "
         f"router P95 below 20ms (currently {r_p95}ms) identifies the culprit. "
         "Recommended order: Smart Connect > MLO > QoS+Flow Controller > Channel width > TWT+OFDMA."
@@ -775,7 +775,7 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
         content = "".join(lines)
         self.send_response(200)
         self.send_header("Content-Type", "text/csv")
-        self.send_header("Content-Disposition", f"attachment; filename=coxkiller_{mins}min.csv")
+        self.send_header("Content-Disposition", f"attachment; filename=notmyrouter_{mins}min.csv")
         self.end_headers()
         self.wfile.write(content.encode())
 
@@ -790,7 +790,7 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
         content = json.dumps(data, indent=2)
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
-        self.send_header("Content-Disposition", f"attachment; filename=coxkiller_{mins}min.json")
+        self.send_header("Content-Disposition", f"attachment; filename=notmyrouter_{mins}min.json")
         self.end_headers()
         self.wfile.write(content.encode())
 
@@ -817,7 +817,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cox Killer</title>
+<title>NotMyRouter</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7"></script>
 <style>
   :root {
@@ -1005,7 +1005,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
 
 <div class="header">
   <div class="brand">
-    <h1>COX KILLER</h1>
+    <h1>NOTMYROUTER</h1>
     <span class="sub">network evidence dashboard</span>
   </div>
   <div class="controls">
@@ -1703,7 +1703,7 @@ def main():
     signal.signal(signal.SIGTERM, cleanup)
 
     server = http.server.HTTPServer(("127.0.0.1", PORT), DashboardHandler)
-    print(f"Cox Killer dashboard: http://localhost:{PORT}")
+    print(f"NotMyRouter dashboard: http://localhost:{PORT}")
     print(f"Reading logs from {LOG_DIR}")
     print("Press Ctrl+C to stop")
 

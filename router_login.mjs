@@ -1,5 +1,5 @@
 /**
- * Cox Killer - TP-Link BE10000 Router API
+ * NotMyRouter - TP-Link BE10000 Router API
  * Implements the TP-Link LuCI encrypted protocol:
  *   - AES-128-CBC with 16 decimal-digit keys (UTF-8 bytes)
  *   - RSA PKCS#1 v1.5 with chunked signing for 512-bit auth key
@@ -276,7 +276,7 @@ if (!password) {
 }
 
 if (cmd !== 'status') {
-  console.log(`Cox Killer - TP-Link BE10000 Router Control`);
+  console.log(`NotMyRouter - TP-Link BE10000 Router Control`);
   console.log(`Connecting to ${ROUTER}...`);
 }
 const session = await login(password);
@@ -324,7 +324,7 @@ if (cmd === 'read') {
   if (w2?.htmode === 'auto') issues.push('2.4GHz width auto → set to 20MHz for stability');
 
   if (issues.length) {
-    console.log('=== Cox Killer Recommendations ===\n');
+    console.log('=== NotMyRouter Recommendations ===\n');
     issues.forEach((iss, i) => console.log(`  ${i + 1}. ${iss}`));
     console.log('\nRun with "apply" to fix these automatically.');
   } else {
@@ -336,7 +336,7 @@ if (cmd === 'read') {
   }
 
 } else if (cmd === 'apply') {
-  console.log('Applying Cox Killer optimizations...\n');
+  console.log('Applying NotMyRouter optimizations...\n');
 
   // 1. Disable Smart Connect
   console.log('1. Disabling Smart Connect...');
@@ -362,7 +362,7 @@ if (cmd === 'read') {
   d = r.data?.data || r.data;
   console.log(`   ${d?.success !== false ? 'OK' : 'FAILED: ' + JSON.stringify(d)}`);
 
-  console.log('\nDone. Monitor Cox Killer dashboard for 30 min to measure improvement.');
+  console.log('\nDone. Monitor NotMyRouter dashboard for 30 min to measure improvement.');
 
 } else if (cmd === 'get') {
   const form = process.argv[4] || 'smart_connect';

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cox Killer - TP-Link BE10000 Router Control
+NotMyRouter - TP-Link BE10000 Router Control
 Implements the full TP-Link LuCI encrypted API protocol (RSA + AES + signature).
 """
 
@@ -262,11 +262,11 @@ def main():
     import urllib.parse
 
     if len(sys.argv) < 2:
-        print("Cox Killer - TP-Link BE10000 Router Control")
+        print("NotMyRouter - TP-Link BE10000 Router Control")
         print()
         print("Usage:")
         print("  router_ctl.py read [PASSWORD]      Read current wireless settings")
-        print("  router_ctl.py apply [PASSWORD]      Apply Cox Killer optimizations")
+        print("  router_ctl.py apply [PASSWORD]      Apply NotMyRouter optimizations")
         print("  router_ctl.py get FORM [PASSWORD]   Read a specific form endpoint")
         print()
         print(f"Router: {ROUTER_IP}")
@@ -300,7 +300,7 @@ def main():
         print(json.dumps(r, indent=2))
 
     elif cmd == "apply":
-        print("\nCox Killer recommended changes:")
+        print("\nNotMyRouter recommended changes:")
         print("  1. Disable Smart Connect")
         print("  2. Reduce channel widths")
         print("  3. Disable Flow Controller")
@@ -324,7 +324,7 @@ def main():
         r = api.write("/admin/wireless?form=smart_connect", {"smart_enable": "off"})
         print(f"Smart Connect OFF: {'OK' if r.get('success') else r}")
 
-        print("\nDone. Monitor Cox Killer dashboard for 30 min to measure improvement.")
+        print("\nDone. Monitor NotMyRouter dashboard for 30 min to measure improvement.")
 
     else:
         print(f"Unknown command: {cmd}")
